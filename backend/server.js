@@ -13,7 +13,7 @@ app.get("/", (req, res) => {
 });
 
 app.post("/upload", (req, res) => {
-  res.send("Hello World!");
+  //res.send("Hello World!");
 
   if (!req.files) {
     return res.status(400).json("No files were uploaded.");
@@ -29,7 +29,7 @@ app.post("/upload", (req, res) => {
         return res.status(500).send(err);
       }
       //Ok response
-      //res.send({ fileName: file.name, filePath: `/uploads/${file.name}` });
+      res.send({ fileName: file.name, filePath: `/uploads/${file.name}` });
     }
   );
 });

@@ -8,6 +8,7 @@ const FileUpload = () => {
   const [uploadedFile, setUploadedFile] = useState(null);
 
   const [images, setImages] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(null);
 
   const fileTypes = ["JPEG", "PNG", "GIF"];
   const handleChange = (file) => {
@@ -16,7 +17,7 @@ const FileUpload = () => {
   };
   const handleChangeinput = (e) => {
     //setFile(file);
-    setImages(e.target.files[0]);
+    setFile(e.target.files[0]);
     console.log(e.target.files[0]);
   };
 
@@ -27,16 +28,24 @@ const FileUpload = () => {
     const formData = new FormData();
     formData.append("file", file);
     console.log(formData);
-    alert();
+
     try {
       const res = await axios.post("http://localhost:5000/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        onUploadProgress: (progressEvent) => {
+          setUploadProgress(
+            parseInt(
+              Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            )
+          );
+        },
       });
-
+      console.log(res.data);
       const { fileName, filePath } = res.data;
       setUploadedFile({ fileName, filePath });
+      alert("File Uploaded");
     } catch (err) {
       if (err.response.status === 500) {
         console.log("There was a problem with the server");
@@ -74,11 +83,23 @@ const FileUpload = () => {
               </p>
             </div>
           </div>
-
+          <div class="progress">
+            <div
+              class="progress-bar progress-bar-striped bg-success"
+              role="progressbar"
+              style={{ width: `${uploadProgress}%` }}
+              aria-valuenow="75"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            ></div>
+          </div>
           <button type="submit" className="btn btn-primary btn-block mt-4">
             Submit
           </button>
         </form>
+        {uploadedFile ? <p>{uploadedFile.name}</p> : <p>none</p>}
+        {uploadedFile ? <p>{uploadedFile.fileName}</p> : <p>none</p>}
+        {uploadedFile && <img src={`uploads/${uploadedFile.fileName}`}></img>}
       </div>
     </div>
   );
