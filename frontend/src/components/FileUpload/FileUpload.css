@@ -1,1 +1,10 @@
-.FileUpload {}
+.FileUpload {
+  max-width: 860px;
+  margin: auto;
+}
+.uplaoder2 {
+  text-align: center;
+  border: 1px dashed rgb(5, 62, 138);
+  height: 240px;
+  width: 860px;
+}

@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import "./FileUpload.css";
 import { FileUploader } from "react-drag-drop-files";
+import { useDropzone } from "react-dropzone";
+
 import axios from "axios";
+
 const FileUpload = () => {
   const [file, setFile] = useState(null);
+  const [isDZDragActive, setIsDZDragActive] = useState(null);
   const [uploadedFile, setUploadedFile] = useState(null);
 
   const [images, setImages] = useState(null);
@@ -54,6 +58,26 @@ const FileUpload = () => {
       }
     }
   };
+
+  //Handles Dropzone
+  const onDrop = useCallback((acceptedFiles) => {
+    console.log(acceptedFiles);
+
+    setFile(acceptedFiles[0]);
+    acceptedFiles.forEach((file) => {
+      const reader = new FileReader();
+
+      reader.onabort = () => console.log("file reading was aborted");
+      reader.onerror = () => console.log("file reading has failed");
+      reader.onload = () => {
+        // Do whatever you want with the file contents
+        const binaryStr = reader.result;
+        console.log(binaryStr);
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  }, []);
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   return (
     <div className="FileUpload" data-testid="FileUpload">
       <div className="">
@@ -81,6 +105,23 @@ const FileUpload = () => {
               <p>
                 {file ? `File name: ${file.name}` : "no files uploaded yet"}
               </p>
+            </div>
+          </div>
+
+          <div className="input-group mb-3">
+            <div {...getRootProps()}>
+              <input {...getInputProps()} />
+              {isDragActive ? (
+                <div>
+                  <p className="uplaoder2">
+                    Drop the files here <i class="fas fa-upload"></i>...
+                  </p>
+                </div>
+              ) : (
+                <p className="uplaoder2">
+                  Drag 'n' drop some files here, or click to select files
+                </p>
+              )}
             </div>
           </div>
           <div class="progress">
